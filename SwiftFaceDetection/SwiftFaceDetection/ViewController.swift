@@ -16,7 +16,7 @@ class FaceViewController: UIViewController {
     
     private var currentCameraDevice:AVCaptureDevice?
     
-    private var sessionQueue:dispatch_queue_t = dispatch_queue_create("com.example.session_access_queue", DISPATCH_QUEUE_SERIAL)
+    private var sessionQueue:dispatch_queue_t = dispatch_queue_create("com.yourtion.SwiftFaceDetection.session_access_queue", DISPATCH_QUEUE_SERIAL)
     
     private var session:AVCaptureSession!
     private var backCameraDevice:AVCaptureDevice?
@@ -41,10 +41,13 @@ class FaceViewController: UIViewController {
             possibleCameraInput = try AVCaptureDeviceInput(device: frontCameraDevice)
         } catch _ {
             possibleCameraInput = nil
+            return
         }
         if let backCameraInput = possibleCameraInput as? AVCaptureDeviceInput {
             if self.session.canAddInput(backCameraInput) {
                 self.session.addInput(backCameraInput)
+            } else {
+                return
             }
         }
         previewLayer = AVCaptureVideoPreviewLayer(session: session)
@@ -95,7 +98,6 @@ extension FaceViewController: AVCaptureMetadataOutputObjectsDelegate {
         for metadataObject in metadataObjects as! [AVMetadataObject] {
             if metadataObject.type == AVMetadataObjectTypeFace {
                 if let faceObject = metadataObject as? AVMetadataFaceObject {
-                    
                     let transformedMetadataObject = previewLayer.transformedMetadataObjectForMetadataObject(metadataObject)
                     let face:(id: Int, frame: CGRect) = (faceObject.faceID, transformedMetadataObject.bounds)
                     faces.append(face)
@@ -103,6 +105,7 @@ extension FaceViewController: AVCaptureMetadataOutputObjectsDelegate {
             }
         }
         print("FACE",faces)
+        
         if (faces.count>0){
             dispatch_async(dispatch_get_main_queue(), {() -> Void in
                 CATransaction.begin()
@@ -113,7 +116,6 @@ extension FaceViewController: AVCaptureMetadataOutputObjectsDelegate {
                 self.faceRectCALayer.hidden = true
             });
         }
-        
     }
     
 }
