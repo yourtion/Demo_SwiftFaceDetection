@@ -111,11 +111,27 @@ extension FaceViewController: AVCaptureMetadataOutputObjectsDelegate {
                 CATransaction.begin()
                 self.faceRectCALayer.hidden = false
                 CATransaction.setAnimationDuration(0)
-                self.faceRectCALayer.frame = faces[0].frame
+                self.faceRectCALayer.frame = self.findMaxFaceRect(faces)
                 CATransaction.commit()
                 self.faceRectCALayer.hidden = true
             });
         }
+    }
+    
+    func findMaxFaceRect(faces:Array<(id:Int,frame:CGRect)>) -> CGRect {
+        if (faces.count == 1) {
+            return faces[0].frame
+        }
+        var maxFace = CGRect.zero
+        var maxFace_size = maxFace.size.width + maxFace.size.height
+        for face in faces {
+            let face_size = face.frame.size.width + face.frame.size.height
+            if (face_size > maxFace_size) {
+                maxFace = face.frame
+                maxFace_size = face_size
+            }
+        }
+        return maxFace
     }
     
 }
