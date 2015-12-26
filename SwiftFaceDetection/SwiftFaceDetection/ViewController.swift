@@ -107,13 +107,21 @@ extension FaceViewController: AVCaptureMetadataOutputObjectsDelegate {
         print("FACE",faces)
         
         if (faces.count>0){
+            self.setLayerHidden(false)
+            CATransaction.begin()
+            CATransaction.setAnimationDuration(0.1)
+            self.faceRectCALayer.frame = self.findMaxFaceRect(faces)
+            CATransaction.commit()
+        } else {
+            self.setLayerHidden(true)
+        }
+    }
+    
+    func setLayerHidden(hidden:Bool) {
+        if (self.faceRectCALayer.hidden != hidden){
+            print("hidden: ", hidden)
             dispatch_async(dispatch_get_main_queue(), {() -> Void in
-                CATransaction.begin()
-                self.faceRectCALayer.hidden = false
-                CATransaction.setAnimationDuration(0)
-                self.faceRectCALayer.frame = self.findMaxFaceRect(faces)
-                CATransaction.commit()
-                self.faceRectCALayer.hidden = true
+                self.faceRectCALayer.hidden = hidden
             });
         }
     }
