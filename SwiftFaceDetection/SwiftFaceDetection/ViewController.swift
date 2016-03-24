@@ -108,10 +108,9 @@ extension FaceViewController: AVCaptureMetadataOutputObjectsDelegate {
         
         if (faces.count>0){
             self.setLayerHidden(false)
-            CATransaction.begin()
-            CATransaction.setAnimationDuration(0.1)
-            self.faceRectCALayer.frame = self.findMaxFaceRect(faces)
-            CATransaction.commit()
+            dispatch_async(dispatch_get_main_queue(), {() -> Void in
+                self.faceRectCALayer.frame = self.findMaxFaceRect(faces)
+            });
         } else {
             self.setLayerHidden(true)
         }
